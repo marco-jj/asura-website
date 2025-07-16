@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components'
+import settings from 'config/settings.js';
 const { navData, rightMenu } = Astro.props;
 ---
 
@@ -50,8 +51,11 @@ const { navData, rightMenu } = Astro.props;
     </span>
   </button>
   <a class="header-logo__link" href="/">
-    <slot name="logo">
-    </slot>
+		<div class="inline-container">
+			<slot name="logo">
+			</slot>
+			<p class="inline-text">Asura | Jiu-Jitsu Studio</p>
+		</div>
   </a>
   </div>
   <div class="header-nav__container">
@@ -65,14 +69,14 @@ const { navData, rightMenu } = Astro.props;
       </nav>}
     </slot>
   </div>
-  <div class="header-action-item__container">
-    <slot name="action-item">
-    </slot>
-  </div>
 </header>
 
 <style>
   header {
+		background:  var(--theme-bg);
+		position: sticky;
+    top: 0;
+		z-index: 100;
     width: 100%;
     padding: 1rem 0.5rem;
     display: flex;
@@ -92,6 +96,27 @@ const { navData, rightMenu } = Astro.props;
     display: flex;
     align-items: center;
     z-index: 100;
+  }
+   .logo {
+     width: 100px;
+     height: auto;
+     display: block;
+     margin: 0 auto;
+   }
+  .inline-container {
+    display: flex;          /* places children on the same row */
+    align-items: center;    /* vertically centers text with icon */
+    gap: 1rem;            /* optional spacing between them */
+  }
+  /* kill the offsets that usually cause the “text looks low” effect */
+  .inline-container ::slotted(*){       /* or .logo */
+    display:block;             /* removes the extra baseline gap under images */
+  }
+
+  .inline-container p{         /* or .text-center */
+    margin:0;                  /* prevents the paragraph’s default top-/bottom-margin from nudging it */
+    line-height:1;             /* optional: tighter text box if you still see drift */
+    font-size: 1.2rem;         /* adjust as needed */
   }
   .header-action-item__container {
     z-index: 100;
@@ -137,16 +162,25 @@ const { navData, rightMenu } = Astro.props;
       width: 100%;
       height: 100%;
       background-color: var(--theme-bg);
-      display: none;
+      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       position: fixed;
       inset: 0;
+      opacity: 0;
+      transform: translateX(-100%);
+      transition: transform 300ms ease;
+      pointer-events: none;
+			visibility: hidden;
       z-index: 99;
     }
     header[mobile-menu-open] .header-nav__container {
       display: flex;
+			opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+			visibility:  visible;
     }
     header[mobile-menu-open] nav ul {
       align-items: center;

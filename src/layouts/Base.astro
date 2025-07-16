@@ -13,6 +13,31 @@ const { seo } = Astro.props;
 <html lang="en">
 	<head>
 		<BaseHead {...seo} />
+		<style>
+      #scrollToTopBtn {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.5rem;
+        border: none;
+        border-radius: 50%;
+        background-color: var(--theme-primary, #333);
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 1000;
+      }
+
+      #scrollToTopBtn.show {
+        opacity: 1;
+        visibility: visible;
+      }
+		</style>
 	</head>
 	<body>
 		<SkipLink />
@@ -22,5 +47,21 @@ const { seo } = Astro.props;
 			<slot />
 		</main>
 		<slot name="footer" />
+		<button id="scrollToTopBtn" title="Go to top">↑</button>
+		<script>
+			const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+			window.addEventListener('scroll', () => {
+				if (window.scrollY > 300) {
+					scrollToTopBtn.classList.add('show');
+				} else {
+					scrollToTopBtn.classList.remove('show');
+				}
+			});
+
+			scrollToTopBtn.addEventListener('click', () => {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			});
+		</script>
 	</body>
 </html>
