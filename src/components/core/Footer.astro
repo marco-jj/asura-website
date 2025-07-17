@@ -5,7 +5,7 @@ import settings from 'config/settings.js';
 import Container  from '../core/Container.astro';
 import Plug from './Plug.astro';
 
-const { footerSocials, footerLists, copyrightName, background, color, showPlug: showPlug = true } =
+const { copyrightName, background, color, showPlug: showPlug = true } =
 	Astro.props;
 
 // Information for the footer links, based on the image provided
@@ -51,7 +51,7 @@ const footerLinks = [
 	<hr class="footer-separator" />
 
 	<p class="footer-copyright">
-		Copyright © {new Date().getFullYear()} {settings.name}
+		Copyright © {new Date().getFullYear()} {copyrightName}
 	</p>
 	</Container>
 </footer>

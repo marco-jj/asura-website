@@ -4,7 +4,7 @@
 	"private": false,
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:treefarmstudio/odyssey-theme"
+		"url": "git@github.com:marco-jj/asura-website"
 	},
 	"scripts": {
 		"dev": "astro dev",
