@@ -1,16 +1,247 @@
 ---
-import ContactForm from '../components/forms/ContactForm.astro';
 import Layout from '../layouts/Page.astro';
 import { Container } from '@components/odyssey-theme';
 
 const seo = {
-	title: 'Timetable | Asura Jiu-Jitsu Studio',
+	title: 'Orari | Asura Jiu-Jitsu Studio',
 	description: 'Timetable Page',
 };
+
+const pageTitle = "Orari";
+
+// Data for the timetable, using the updated Saturday schedule
+const schedule = [
+	{
+		time: '10.00 - 11.30',
+		lun: { text: 'Ground Work', type: 'light' },
+		mar: '',
+		mer: { text: 'On Feet', type: 'light' },
+		gio: '',
+		ven: { text: 'Ground Work', type: 'light' },
+		sab: [
+			{ time: '10.00-11.00', text: 'Leg Entanglement', type: 'dark' },
+			{ time: '11.00-12.00', text: 'Open Mat', type: 'dark' }
+		]
+	},
+	{ time: '12.30 - 14.00', lun: '', mar: { text: 'Ground Work', type: 'light' }, mer: '', gio: { text: 'Ground Work', type: 'light' }, ven: '', sab: '' },
+	{ time: '18.45 - 20.15', lun: { text: 'On Feet', type: 'dark' }, mar: { text: 'Ground Work', type: 'dark' }, mer: { text: 'Ground Work', type: 'dark' }, gio: { text: 'Ground Work', type: 'dark' }, ven: { text: 'On Feet', type: 'dark' }, sab: '' }
+];
+
+const headers = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
 ---
 
+<style>
+  .timetable-wrapper {
+    overflow-x: auto; /* Allows horizontal scrolling on small screens if needed */
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--theme-surface-1);
+    border-radius: var(--theme-shape-radius, 1rem);
+    background-color: var(--theme-bg);
+  }
+
+  .timetable-table {
+    width: 100%;
+    min-width: 600px; /* Ensures table doesn't get too cramped */
+    border-collapse: collapse;
+    font-size: var(--font-size-base);
+    text-align: center;
+  }
+
+  .timetable-table th, .timetable-table td {
+    padding: 1.25rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--theme-surface-1);
+  }
+
+  .timetable-table thead th {
+    font-family: var(--theme-font-family-serif);
+    font-weight: 700;
+    font-size: var(--font-size-md);
+    color: var(--theme-primary);
+    border-bottom-width: 2px;
+    border-color: var(--theme-primary);
+  }
+
+  .time-col {
+    font-weight: 700;
+    white-space: nowrap;
+    width: 1%;
+    text-align: right;
+    color: var(--theme-on-bg);
+    border-right: 1px solid var(--theme-surface-1);
+  }
+
+  .class-cell {
+    border-radius: 8px;
+    margin: 4px;
+    display: block;
+    padding: 1rem 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .class-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .light-cell {
+    background-color: var(--theme-surface-1);
+    color: var(--theme-on-surface-1);
+  }
+
+  .dark-cell {
+    background-color: var(--theme-primary);
+    color: var(--theme-on-primary);
+    font-weight: 500;
+  }
+
+  .split-cell-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Responsive Design for Mobile */
+  @media (max-width: 768px) {
+    .timetable-wrapper {
+      border: none;
+      background: none;
+    }
+    .timetable-table, .timetable-table thead, .timetable-table tbody, .timetable-table th, .timetable-table td, .timetable-table tr {
+      display: block;
+    }
+
+    .timetable-table thead {
+      display: none;
+    }
+
+    .timetable-table tr {
+      background: var(--theme-bg);
+      border: 1px solid var(--theme-surface-1);
+      border-radius: var(--theme-shape-radius, 1rem);
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+    }
+
+    .timetable-table td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid var(--theme-surface-1);
+      min-height: auto;
+    }
+
+    .timetable-table td:last-child {
+      border-bottom: none;
+    }
+
+    .timetable-table td:before {
+      content: attr(data-label);
+      font-weight: bold;
+      color: var(--theme-primary);
+    }
+
+    .time-col {
+      border: none;
+      font-size: var(--font-size-lg);
+      font-family: var(--theme-font-family-serif);
+      justify-content: center;
+      padding: 1rem;
+      border-bottom: 2px solid var(--theme-primary) !important;
+    }
+
+    .time-col:before {
+      display: none;
+    }
+
+    .class-cell {
+      width: 100%;
+      text-align: center;
+    }
+
+    .split-cell-container {
+      width: 100%;
+    }
+
+    /* Adjust split cell on mobile */
+    .timetable-table td.split-cell {
+      flex-direction: column;
+      align-items: flex-end;
+      padding: 0;
+    }
+
+    .timetable-table td.split-cell:before {
+      align-self: flex-start;
+      padding: 0.75rem 0.5rem;
+    }
+
+    .split-cell-container {
+      padding: 0;
+    }
+
+    .split-cell-container .class-item {
+      width: 100%;
+      padding: 1rem 0.5rem;
+      border-radius: 0;
+    }
+
+    .split-cell-container .class-item:first-child {
+      border-bottom: 1px solid var(--theme-on-bg);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+
+</style>
 <Layout seo={seo}>
 	<Container>
+		<section class="text-section">
+			<h1>{pageTitle}</h1>
+		</section>
+		<div class="timetable-wrapper">
+			<table class="timetable-table">
+				<thead>
+				<tr>
+					<th class="time-col"></th>
+					{headers.map(header => <th>{header}</th>)}
+				</tr>
+				</thead>
+				<tbody>
+				{schedule.map(row => (
+					<tr>
+						<td class="time-col" data-label={row.time}>{row.time}</td>
 
+						{Object.keys(row).slice(1).map((day, i) => {
+							const cellData = row[day];
+							if (!cellData) {
+								return <td data-label={headers[i]}></td>;
+							}
+
+							if (Array.isArray(cellData)) {
+								return (
+									<td class="split-cell" data-label={headers[i]}>
+										<div class="split-cell-container">
+											{cellData.map(item => (
+												<div class={`${item.type}-cell class-item`}>
+													{item.text}
+												</div>
+											))}
+										</div>
+									</td>
+								);
+							}
+
+							return (
+								<td data-label={headers[i]}>
+									<div class={`${cellData.type}-cell class-item`}>{cellData.text}</div>
+								</td>
+							);
+						})}
+					</tr>
+				))}
+				</tbody>
+			</table>
+		</div>
 	</Container>
 </Layout>
